@@ -3,24 +3,40 @@ package com.rodrigomiranda.demoapp.di
 import com.rodrigomiranda.demoapp.repo.QuestionsRepo
 import com.rodrigomiranda.demoapp.repo.QuestionsRepoImpl
 import com.rodrigomiranda.demoapp.service.QuestionApi
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 /**
  * Created by rodrigomiranda on 17/11/24.
  */
+@Module
+@InstallIn(SingletonComponent::class)
 object Module {
 
-    private val retrofitInstance: Retrofit =
+    @Provides
+    fun provideBaseUrl() = BASE_URL
+
+    @Provides
+    @Singleton
+    fun provideRetrofitInstance(baseUrl: String): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-    val questionApiInstance: QuestionApi =
+    @Provides
+    @Singleton
+    fun provideQuestionApi(retrofitInstance: Retrofit): QuestionApi =
         retrofitInstance.create(QuestionApi::class.java)
 
-    val questionsRepo: QuestionsRepo =
+    @Provides
+    @Singleton
+    fun provideQuestionsRepo(questionApiInstance: QuestionApi): QuestionsRepo =
         QuestionsRepoImpl(questionApiInstance)
 }
 
