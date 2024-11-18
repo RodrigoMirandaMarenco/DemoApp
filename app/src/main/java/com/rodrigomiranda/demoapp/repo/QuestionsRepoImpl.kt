@@ -8,7 +8,7 @@ import javax.inject.Inject
  * Created by rodrigomiranda on 17/11/24.
  */
 class QuestionsRepoImpl @Inject constructor(
-    val api: QuestionApi
+    private val api: QuestionApi
 ) : QuestionsRepo {
 
     override suspend fun getQuestions(): List<Question> {
