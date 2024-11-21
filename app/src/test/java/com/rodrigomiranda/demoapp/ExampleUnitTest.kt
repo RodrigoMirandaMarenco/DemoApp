@@ -724,7 +724,7 @@ class ExampleUnitTest {
         }
     }
 
-    fun isValid(s: String): Boolean {
+    fun isValidParenthesis(s: String): Boolean {
         val openChars = hashMapOf('(' to 0, '{' to 1, '[' to 2)
         val closeChars = hashMapOf(')' to 0, '}' to 1, ']' to 2)
 
