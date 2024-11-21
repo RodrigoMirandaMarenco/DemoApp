@@ -5,6 +5,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.Calendar
+import java.util.Date
 import java.util.LinkedList
 import java.util.PriorityQueue
 import java.util.Queue
@@ -812,5 +814,52 @@ class ExampleUnitTest {
         sb.append(currentChar)
         if (currentCount > 1) sb.append(currentCount)
         return sb.toString()
+    }
+
+    @Test
+    fun howLongAgoTest() {
+        val time = Calendar.getInstance()
+        assertEquals(JUST_NOW, howLongAgo(time.time))
+
+        time.add(Calendar.SECOND, -30)
+        assertEquals(LESS_THAN_A_MINUTE, howLongAgo(time.time))
+
+        time.add(Calendar.MINUTE, -1)
+        assertEquals(String.format(N_MINUTES, 1, ""), howLongAgo(time.time))
+
+        time.add(Calendar.MINUTE, -9)
+        assertEquals(String.format(N_MINUTES, 10, "s"), howLongAgo(time.time))
+
+        time.add(Calendar.HOUR, -8)
+        assertEquals(String.format(N_HOURS, 8), howLongAgo(time.time))
+
+        time.add(Calendar.HOUR, -49)
+        assertEquals(String.format(N_DAYS, 2), howLongAgo(time.time))
+    }
+
+    private fun howLongAgo(date: Date): String {
+        var result = ""
+        val diffMillis = Calendar.getInstance().time.time - date.time
+        result = when(diffMillis) {
+            in 0 until 1*1000 -> JUST_NOW
+            in 1*1000 until  60*1000 -> LESS_THAN_A_MINUTE
+            in 60*1000 until  60*1000*60 -> {
+                val minutes = diffMillis/1000/60
+                String.format(N_MINUTES, minutes, if (minutes == 1L) "" else "s")
+            }
+            in 60*1000*60 until  60*1000*60*24 -> String.format(N_HOURS, diffMillis/1000/60/60)
+            in 60*1000*60*24 until  60*1000*60*24*10 -> String.format(N_DAYS, diffMillis/1000/60/60/24)
+            else -> UNKOWN
+        }
+        return result
+    }
+
+    companion object {
+        const val JUST_NOW = "Just now."
+        const val LESS_THAN_A_MINUTE = "Less than a minute ago."
+        const val N_MINUTES = "%d minute%s ago."
+        const val N_HOURS = "%d hours ago."
+        const val N_DAYS = "%d days ago."
+        const val UNKOWN = "Hasn't happened yet."
     }
 }
